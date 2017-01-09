@@ -6,7 +6,10 @@ x = 0.
 
 
 def fitness(a):
-    return np.abs(np.sin(a))
+    if a<=np.pi/2 and a>=0:
+        return np.abs(np.sin(a))
+    else:
+        return -1000
 
 steps=1000
 X=[]
@@ -48,11 +51,11 @@ plt.scatter(range(steps), X)
 plt.xlabel('czas')
 plt.ylabel('x')
 plt.show()
-plt.scatter(X, fitness(X))
-plt.plot(X, fitness(X))
-plt.xlabel('x')
-plt.ylabel('f dopasowania')
-plt.show()
+#plt.scatter(X, fitness(X))
+#plt.plot(X, fitness(X))
+#plt.xlabel('x')
+#plt.ylabel('f dopasowania')
+#plt.show()
 
 
 

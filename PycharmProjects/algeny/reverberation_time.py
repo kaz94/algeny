@@ -10,7 +10,7 @@ angle = np.pi/4.
 
 
 def reverberation_time(angle, x_init=2., y_init=2., N=500):
-    if angle <= 2*np.pi and angle >= np.pi and x_init >=0 and x_init <=4 and y_init >= 0 and y_init <=4:
+    if angle <= 2*np.pi and angle >= 0 and x_init >=0 and x_init <=4 and y_init >= 3.5 and y_init <=4:
         wall1_x = 0
         attenuation_factor_wall1_x = 0.1  # malowany beton
         wall2_x = 4
@@ -26,7 +26,10 @@ def reverberation_time(angle, x_init=2., y_init=2., N=500):
         times = []
         I_sum = 0.
         for i in range(N):
-            propagation_angle = np.random.normal(angle, np.pi/10) #random.uniform(angle-np.pi/6., angle+np.pi/6.)
+            rev_time_calculate = 0
+            I_calculate = 1
+            rev_time = 0
+            propagation_angle = np.random.normal(angle, np.pi/30) #random.uniform(angle-np.pi/6., angle+np.pi/6.)
             x = x_init
             y = y_init
             v_x = v_soud * np.cos(propagation_angle)
@@ -34,29 +37,37 @@ def reverberation_time(angle, x_init=2., y_init=2., N=500):
             t = 0
             I = initial_intensity
             while(I >= threshold_of_hearing):
-                if y < 3./4. * y_init:
-                    I_sum += I
+                if 0.5 < y < 3./4. * wall2_y and 3.5/4. * wall2_x > x > 0.5 and I_calculate == 1:
+                    I_sum = I
+                    I_calculate = 0
                 x += v_x * dt
                 y += v_y * dt
                 if x <= wall1_x:
                     v_x *= -1
                     I *= (1-attenuation_factor_wall1_x)
+                    rev_time_calculate = 1
                 elif x >= wall2_x:
                     v_x *= -1
                     I *= (1-attenuation_factor_wall2_x)
+                    rev_time_calculate = 1
                 elif y <= wall1_y:
                     v_y *= -1
                     I *= (1-attenuation_factor_wall1_y)
+                    rev_time_calculate = 1
                 elif y >= wall2_y:
                     v_y *= -1
                     I *= (1-attenuation_factor_wall2_y)
-                t += dt
+                    rev_time_calculate = 1
+                if rev_time_calculate == 1:
+                    rev_time+=dt
+                    times.append(rev_time)
                 I *= 0.99
                 #plt.plot(x,y,'.', color='g')
-            times.append(t)
-            #plt.show()
 
-        return np.array(times).mean()+ 1./I_sum/25.
+            #plt.show()
+            #print np.array(times).mean()
+            #print 1/(1e7*I_sum)
+        return np.array(times).mean()+ 4/(1e7*I_sum)
     else:
         return 1000
 
@@ -76,23 +87,23 @@ if __name__ == "__main__":
     # plt.xlabel("Number of iterations")
     # plt.ylabel("Average reverberation time")
 
-    angle = 3./2.*np.pi
-    x = np.arange(0.1, 3.99, 0.2)
-    plt.subplot('121')
-    for a in x:
-        #plt.plot(a,1./(40.*reverberation_time(angle, a, 3.99, 500)[1])+reverberation_time(angle, a, 3.99, 500)[0], 'o', color='g')
-        F = reverberation_time(angle, a, 3.99, 500)
-        plt.plot(a,F, 'o', color='r')
-        #plt.plot(a,1./F[1]/25., 'o', color='g')
-        print a
-
-    plt.xlabel("x")
-    plt.ylabel("Average reverberation time")
+    # angle = 3./2.*np.pi
+    # x = np.arange(0.1, 3.99, 0.2)
+    # plt.subplot('121')
+    # for a in x:
+    #     #plt.plot(a,1./(40.*reverberation_time(angle, a, 3.99, 500)[1])+reverberation_time(angle, a, 3.99, 500)[0], 'o', color='g')
+    #     F = reverberation_time(angle, a, 3.99, 500)
+    #     plt.plot(a,F, 'o', color='r')
+    #     #plt.plot(a,1./F[1]/25., 'o', color='g')
+    #     print a
+    #
+    # plt.xlabel("x")
+    # plt.ylabel("Average reverberation time")
     #plt.show()
 
 
-    angles = np.arange(np.pi, 2.*np.pi, 0.2)
-    x=1.
+    angles = np.arange(0, 2.*np.pi, 0.2)
+    x=2.
     plt.subplot('122')
     for a in angles:
         # plt.plot(a,1./(40.*reverberation_time(angle, a, 3.99, 500)[1])+reverberation_time(angle, a, 3.99, 500)[0], 'o', color='g')
@@ -103,6 +114,20 @@ if __name__ == "__main__":
     plt.xlabel("angle")
     plt.ylabel("Average reverberation time")
     plt.show()
+
+
+    # n = np.arange(0, 20, 1)
+    # x=2.
+    # plt.subplot('111')
+    # for a in n:
+    #     # plt.plot(a,1./(40.*reverberation_time(angle, a, 3.99, 500)[1])+reverberation_time(angle, a, 3.99, 500)[0], 'o', color='g')
+    #     F = reverberation_time(3./2.*np.pi, x, 3.9, 500)
+    #     plt.plot(a, F, 'o', color='r')
+    #     #plt.plot(a, 1./F[1]/25., 'o', color='g')
+    #     print a
+    # plt.xlabel("angle")
+    # plt.ylabel("Average reverberation time")
+    # plt.show()
 
     '''fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')

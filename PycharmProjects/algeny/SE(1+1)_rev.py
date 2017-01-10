@@ -6,12 +6,12 @@ from reverberation_time import reverberation_time
 
 fitness = reverberation_time
 #angle = np.array([6.])
-angle = 3./2. * np.pi
-x = 0.2
+angle = 0#3./2. * np.pi
+x = 2.
 y = 3.9
 
 
-steps=100
+steps=40
 angles = []
 X=[]
 sigma = 2
@@ -95,7 +95,7 @@ plt.ylabel('x')
 plt.show()
 
 
-plt.plot(range(steps), fits, 'o-', color='r')
-plt.xlabel('kat')
+plt.plot(range(steps), fits, 'o', color='r')
+plt.xlabel('krok')
 plt.ylabel('f dopasowania')
 plt.show()
